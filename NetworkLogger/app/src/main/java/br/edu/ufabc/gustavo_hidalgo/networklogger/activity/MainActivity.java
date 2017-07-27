@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public Fragment mFragment;
     public FragmentManager mFragmentManager;
     public FragmentTransaction mFragmentTransaction;
+    String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     public static final String TAG = "[NetLog]MainActivity";
 
     @Override
@@ -30,24 +32,21 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         mFragmentManager = getFragmentManager();
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSIONS_REQUEST);
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+        for (String permission:PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSIONS_REQUEST);
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
             }
         }
         onFragmentInteraction(Constants.MAIN_FRAGMENT);
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         Log.d(TAG,String.valueOf(fragment)+" - changing frag");
         switch (fragment){
             case Constants.MAIN_FRAGMENT:
-                mFragment = MainFragment.newInstance(this);
+                mFragment = MainFragment.newInstance();
                 break;
         }
         mFragmentTransaction.replace(R.id.frame, mFragment);
