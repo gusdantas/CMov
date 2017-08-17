@@ -1,15 +1,11 @@
 package br.edu.ufabc.gustavo_hidalgo.networklogger.util;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
@@ -27,16 +23,16 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Calendar;
 import java.util.List;
+
+import br.edu.ufabc.gustavo_hidalgo.networklogger.fragment.MainFragment;
 
 /**
  * Created by note on 29/07/17.
  */
 
 public class NetLogger {
-    Context mContext;
+    MainFragment mMainFragment;
     static TelephonyManager sTelephonyManager;
     File NETLOG;
     FileWriter mFileWriter;
@@ -44,10 +40,11 @@ public class NetLogger {
 
     public static final String TAG = "[NetLog]NetLogger";
 
-    public NetLogger(Context context, File file){
-        mContext = context;
+    public NetLogger(MainFragment mainFragment, File file){
+        mMainFragment = mainFragment;
         NETLOG = file;
-        sTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        sTelephonyManager = (TelephonyManager) mMainFragment.getActivity()
+                .getSystemService(Context.TELEPHONY_SERVICE);
         getLocationInfo();
         try {
             mFileWriter = new FileWriter(NETLOG);
@@ -64,6 +61,7 @@ public class NetLogger {
         stringBuilder.append(timeStamp.toString()).append(";");
         stringBuilder.append(mLocation).append(";");
         stringBuilder.append(getCellInfo()).append("\n");
+        mMainFragment.setText(timeStamp.toString(), mLocation, getCellInfo());
         try {
             mFileWriter.append(stringBuilder.toString());
         } catch (IOException e) {
@@ -148,7 +146,7 @@ public class NetLogger {
 
     private void getLocationInfo() {
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) mContext
+        LocationManager locationManager = (LocationManager) mMainFragment.getActivity()
                 .getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to getLocationInfo updates
@@ -169,9 +167,9 @@ public class NetLogger {
         };
 
         // Register the listener with the Location Manager to receive getLocationInfo updates
-        if (ActivityCompat.checkSelfPermission(mContext,
+        if (ActivityCompat.checkSelfPermission(mMainFragment.getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext,
+                ActivityCompat.checkSelfPermission(mMainFragment.getActivity(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) !=
                         PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

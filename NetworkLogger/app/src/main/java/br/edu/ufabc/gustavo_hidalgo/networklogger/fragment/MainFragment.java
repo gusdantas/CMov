@@ -104,7 +104,7 @@ public class MainFragment extends Fragment implements CompoundButton.OnCheckedCh
             String filename = "NL-"+mCalendar.getTime().toString()+".csv";
             filename = filename.replace(" ","-").replace(":","-");
             NETLOG = new File(getActivity().getExternalFilesDir(null), filename);
-            mNetLogger = new NetLogger(getActivity(), NETLOG);
+            mNetLogger = new NetLogger(this, NETLOG);
             mHandler.post(mRunnable);
 
         } else {
@@ -127,5 +127,11 @@ public class MainFragment extends Fragment implements CompoundButton.OnCheckedCh
                                 "file " + path + " was scanned seccessfully: " + uri);
                     }
                 });
+    }
+
+    public void setText(String time, String cell, String location){
+        mTimeInfoTv.setText(time);
+        mCellInfoTv.setText(cell);
+        mLocationInfoTv.setText(location);
     }
 }
